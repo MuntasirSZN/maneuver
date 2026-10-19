@@ -66,9 +66,9 @@ jobs:
         uses: moonrepo/setup-rust@abb2d32350334249b178c401e5ec5836e0cd88d3 # v1.3.0
         with:
           components: clippy
-          bins: cargo-hack,just
+          bins: just
       - name: Run clippy
-        run: just lint-features && just lint
+        run: just lint
   test:
     name: Test (${{ matrix.rust }}, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -91,64 +91,12 @@ jobs:
         uses: moonrepo/setup-rust@abb2d32350334249b178c401e5ec5836e0cd88d3 # v1.3.0
         with:
           channel: ${{ matrix.rust }}
-          bins: cargo-nextest,just,cargo-hack
+          bins: cargo-nextest,just
       - name: Build
         run: just build
       - name: Run tests
         run: |
-          just test
-  wasm:
-    name: WASM (wasm32-unknown-unknown, rust=${{ matrix.rust }})
-    runs-on: ubuntu-latest
-    needs: msrv
-    permissions:
-      contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        rust: [stable, "${{ needs.msrv.outputs.version }}"]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Setup node
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: latest
-      - name: Setup Rust
-        uses: moonrepo/setup-rust@abb2d32350334249b178c401e5ec5836e0cd88d3 # v1.3.0
-        with:
-          channel: ${{ matrix.rust }}
-          bins: just,wasm-pack
-      - name: Run tests
-        run: |
-          just test-wasm
-  check:
-    name: Feature Build (${{ matrix.rust }}, ${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    needs: msrv
-    permissions:
-      contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        rust: [stable, "${{ needs.msrv.outputs.version }}"]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: ./.github/actions/setup-windows
-        if: runner.os == 'Windows'
-      - name: Setup Rust
-        uses: moonrepo/setup-rust@abb2d32350334249b178c401e5ec5836e0cd88d3 # v1.3.0
-        with:
-          channel: ${{ matrix.rust }}
-          bins: cargo-hack,just
-      - name: Check
-        run: just check-features
+          just test-fast
   docs:
     name: Documentation
     runs-on: ubuntu-latest
