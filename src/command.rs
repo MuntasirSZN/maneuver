@@ -22,28 +22,25 @@ impl Command {
         }
     }
 
-    /// Add an option accepted by the command.
+    /// Add an option.
     pub fn option(mut self, option: Opt) -> Self {
         self.options.push(option);
         self
     }
 
-    /// Add a flag accepted by the command.
+    /// Add a flag.
     pub fn flag(mut self, flag: Flag) -> Self {
         self.flags.push(flag);
         self
     }
 
-    /// Add a positional argument accepted by the command.
+    /// Add a positional argument.
     pub fn argument(mut self, argument: Arg) -> Self {
         self.arguments.push(argument);
         self
     }
 
-    /// Renders the part of the synopsis that follows the command name.
-    ///
-    /// The result is empty when the command takes no flags, options or
-    /// arguments.
+    /// Render the part of the synopsis that follows the command name.
     pub(crate) fn details(&self) -> String {
         let mut details = String::new();
         if !self.flags.is_empty() {

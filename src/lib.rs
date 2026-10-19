@@ -2,17 +2,6 @@
 #![doc = include_str!("../README.md")]
 
 /// Returns the version of the crate that invokes this macro.
-///
-/// The `env!` is expanded at the call site, so this yields the version of the
-/// program being documented rather than the version of this crate.
-///
-/// # Examples
-///
-/// ```
-/// use maneuver::prelude::*;
-///
-/// let manual = Manual::new("demo").version(maneuver::crate_version!());
-/// ```
 #[macro_export]
 macro_rules! crate_version {
     () => {
@@ -21,17 +10,6 @@ macro_rules! crate_version {
 }
 
 /// Returns the name of the crate that invokes this macro.
-///
-/// The `env!` is expanded at the call site, so this yields the name of the
-/// program being documented rather than the name of this crate.
-///
-/// # Examples
-///
-/// ```
-/// use maneuver::prelude::*;
-///
-/// let manual = Manual::new(maneuver::crate_name!());
-/// ```
 #[macro_export]
 macro_rules! crate_name {
     () => {

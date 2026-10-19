@@ -106,20 +106,11 @@ fn synopsis(
 
 /// Create a `COMMANDS` section.
 ///
-/// Each command is rendered as a tagged paragraph holding its synopsis and
-/// description. The options, flags and arguments a command accepts are nested
-/// below it.
-///
 /// ## Formatting
 /// ```txt
 /// COMMANDS
 ///        check [OPTIONS] [PATH]
 ///               Check availability for a file or directory.
-///        .RS 4
-///        .TP
-///        --all-targets
-///               Run the check for all targets.
-///        .RE
 /// ```
 fn commands(page: Roff, commands: &[Command]) -> Roff {
     if commands.is_empty() {
@@ -143,7 +134,7 @@ fn commands(page: Roff, commands: &[Command]) -> Roff {
     page
 }
 
-/// Renders the options, flags and arguments a command accepts.
+/// Render the options, flags and arguments a command accepts.
 fn command_entries(mut page: Roff, command: &Command) -> Roff {
     if command.options.is_empty() && command.flags.is_empty() && command.arguments.is_empty() {
         return page;
@@ -259,7 +250,7 @@ fn options(page: Roff, options: &[Opt]) -> Roff {
     definition_section(page, "OPTIONS", entries)
 }
 
-/// Renders the inline arguments of a flag.
+/// Render the inline arguments of a flag.
 fn flag_args(flag: &Flag) -> Vec<Inline> {
     let mut args: Vec<Inline> = vec![];
     if let Some(ref short) = flag.short {
@@ -274,7 +265,7 @@ fn flag_args(flag: &Flag) -> Vec<Inline> {
     args
 }
 
-/// Renders the inline arguments of an option.
+/// Render the inline arguments of an option.
 fn option_args(opt: &Opt) -> Vec<Inline> {
     let mut args: Vec<Inline> = vec![];
     if let Some(ref short) = opt.short {
@@ -331,10 +322,7 @@ fn definition_section<'a>(
     definition_list(page, entries)
 }
 
-/// Emits a definition list.
-///
-/// Every entry becomes a tagged paragraph holding the arguments and their
-/// description. The description is omitted when it is empty.
+/// Emit a definition list, skipping empty descriptions.
 fn definition_list<'a>(
     mut page: Roff,
     entries: impl Iterator<Item = (Vec<Inline>, &'a str)>,

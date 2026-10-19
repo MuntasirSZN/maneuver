@@ -145,9 +145,6 @@ impl Manual {
     }
 
     /// Set the version displayed by the man-page formatter.
-    ///
-    /// No version is set by default: the manual page describes the program
-    /// that uses this crate, not the crate itself.
     pub fn version<S: Into<String>>(mut self, version: S) -> Self {
         self.version = Some(version.into());
         self

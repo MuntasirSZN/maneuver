@@ -30,10 +30,7 @@ impl Arg {
         self
     }
 
-    /// Renders the argument the way it is spelled in a synopsis.
-    ///
-    /// Optional arguments are wrapped in brackets and variadic arguments are
-    /// suffixed with an ellipsis.
+    /// Render the argument as it is spelled in a synopsis.
     pub(crate) fn render(&self) -> String {
         let mut rendered = if self.optional {
             format!("[{}]", self.name)

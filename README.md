@@ -85,12 +85,10 @@ it does not install files or require a particular build system.
 ## Metadata and flexible sections
 
 The `version`, `date`, and `source` methods populate the corresponding man
-header metadata. No version is set by default, because the manual page
-describes the program that uses this crate rather than the crate itself; call
-`version("1.2.3")` to fill the field in and `without_version()` to leave it
-empty on purpose. The `maneuver::crate_version!` and `maneuver::crate_name!`
-macros expand at the call site, so they report the version and the name of the
-program being documented:
+header metadata. No version is set by default, since the manual page describes
+the program using this crate, not the crate itself. The `crate_version!` and
+`crate_name!` macros expand at the call site, so they report the program being
+documented:
 
 ```rust
 use maneuver::prelude::*;
@@ -126,9 +124,9 @@ Manual::new("git-like")
 ## Subcommands
 
 `Command` documents a subcommand. Its synopsis is derived from the command
-name and the flags, options and arguments it accepts, so it never drifts from
-the entries listed underneath it. A manual that has at least one command
-mentions `[COMMAND]` in its synopsis:
+name and the flags, options and arguments it accepts, so it cannot drift from
+the entries listed underneath it. A manual with at least one command mentions
+`[COMMAND]` in its synopsis:
 
 ```rust
 use maneuver::prelude::*;
