@@ -15,16 +15,7 @@ impl Env {
             help: None,
         }
     }
-
-    /// Set the default value.
-    pub fn default_value(mut self, default: &str) -> Self {
-        self.default = Some(default.into());
-        self
-    }
-
-    /// Set the help.
-    pub fn help(mut self, help: &str) -> Self {
-        self.help = Some(help.into());
-        self
-    }
 }
+
+impl_default_value!(Env);
+impl_help!(Env);

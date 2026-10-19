@@ -1,5 +1,5 @@
 use insta::assert_snapshot;
-use man::{Arg, Author, Env, Example, Flag, Manual, Opt, Section};
+use man::{Arg, Author, Env, Example, ExitStatus, Flag, Manual, Opt, Section};
 
 #[test]
 fn empty_manual_contains_required_sections() {
@@ -13,6 +13,14 @@ fn manual_renders_description_and_positional_arguments() {
         .description("long description")
         .arg(Arg::new("input"))
         .arg(Arg::new("output"))
+        .render());
+}
+
+#[test]
+fn manual_renders_optional_and_variadic_arguments() {
+    assert_snapshot!(Manual::new("demo")
+        .arg(Arg::new("config").optional())
+        .arg(Arg::new("files").variadic())
         .render());
 }
 
@@ -101,6 +109,23 @@ fn manual_renders_single_and_multiple_authors() {
             .author(Author::new("Bob").email("bob@example.com"))
             .render()
     );
+
+    assert_snapshot!(Manual::new("demo")
+        .author(
+            Author::new("Project Team")
+                .email("team@example.com")
+                .text("Maintained by the platform group.")
+                .text("Contact us for contribution questions.")
+        )
+        .render());
+}
+
+#[test]
+fn manual_renders_custom_exit_statuses() {
+    assert_snapshot!(Manual::new("demo")
+        .status(ExitStatus::new("64", "Command line usage error."))
+        .status(ExitStatus::new("70", "Internal software error."))
+        .render());
 }
 
 #[test]

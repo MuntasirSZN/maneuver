@@ -19,28 +19,8 @@ impl Opt {
             long: None,
         }
     }
-
-    /// Set the default value.
-    pub fn default_value(mut self, default: &str) -> Self {
-        self.default = Some(default.into());
-        self
-    }
-
-    /// Set the help.
-    pub fn help(mut self, help: &str) -> Self {
-        self.help = Some(help.into());
-        self
-    }
-
-    /// Set the short value.
-    pub fn short(mut self, short: &str) -> Self {
-        self.short = Some(short.into());
-        self
-    }
-
-    /// Set the long value.
-    pub fn long(mut self, long: &str) -> Self {
-        self.long = Some(long.into());
-        self
-    }
 }
+
+impl_default_value!(Opt);
+impl_help!(Opt);
+impl_short_long!(Opt);

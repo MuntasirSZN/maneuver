@@ -3,6 +3,23 @@ use roff::{bold, italic, roman, Inline, Roff};
 
 /// The main man page struct.
 #[derive(Debug, Clone)]
+pub struct ExitStatus {
+    code: String,
+    description: String,
+}
+
+impl ExitStatus {
+    /// Create an exit status entry.
+    pub fn new(code: &str, description: &str) -> Self {
+        Self {
+            code: code.into(),
+            description: description.into(),
+        }
+    }
+}
+
+/// The main man page struct.
+#[derive(Debug, Clone)]
 pub struct Manual {
     name: String,
     about: Option<String>,
@@ -14,6 +31,7 @@ pub struct Manual {
     arguments: Vec<Arg>,
     custom_sections: Vec<Section>,
     examples: Vec<Example>,
+    statuses: Vec<ExitStatus>,
 }
 
 impl Manual {
@@ -30,6 +48,7 @@ impl Manual {
             environment: vec![],
             custom_sections: vec![],
             examples: vec![],
+            statuses: vec![],
         }
     }
 
@@ -81,9 +100,13 @@ impl Manual {
         self
     }
 
-    /// Add a positional argument. The items are displayed in the order they're
-    /// pushed.
-    // TODO: make this accept argument vecs / optional args too.  `arg...`, `arg?`
+    /// Add an exit status entry.
+    pub fn status(mut self, status: ExitStatus) -> Self {
+        self.statuses.push(status);
+        self
+    }
+
+    /// Add a positional argument. Items are displayed in insertion order.
     pub fn arg(mut self, arg: Arg) -> Self {
         self.arguments.push(arg);
         self
@@ -108,7 +131,7 @@ impl Manual {
         for section in self.custom_sections.into_iter() {
             page = custom(page, section);
         }
-        page = exit_status(page);
+        page = exit_status(page, &self.statuses);
         page = examples(page, &self.examples);
         page = authors(page, &self.authors);
         page.render()
@@ -161,7 +184,7 @@ fn synopsis(page: Roff, name: &str, flags: &[Flag], options: &[Opt], args: &[Arg
     msg.push(roman(options));
 
     for arg in args {
-        msg.push(roman(format!(" {}", arg.name)));
+        msg.push(roman(format!(" {}", arg.render())));
     }
 
     section(page, "SYNOPSIS", msg)
@@ -190,6 +213,9 @@ fn authors(page: Roff, authors: &[Author]) -> Roff {
         if let Some(ref email) = author.email {
             value.push(roman(format!(" <{}>", email)))
         };
+        for text in &author.text {
+            value.push(roman(format!(" {}", text)))
+        }
         page.text(value);
     }
     page
@@ -236,8 +262,7 @@ fn options(page: Roff, options: &[Opt]) -> Roff {
         return page;
     }
 
-    let mut page = section(page, "OPTIONS", vec![]);
-    for opt in options {
+    let entries = options.iter().map(|opt| {
         let mut args: Vec<Inline> = vec![];
         if let Some(ref short) = opt.short {
             args.push(bold(short));
@@ -251,18 +276,14 @@ fn options(page: Roff, options: &[Opt]) -> Roff {
         args.push(roman("="));
         args.push(italic(&opt.name));
         if let Some(ref default) = opt.default {
-            if !args.is_empty() {
-                args.push(roman(" "));
-            }
+            args.push(roman(" "));
             args.push(roman("[default: "));
             args.push(italic(default));
             args.push(roman("]"));
         }
-        page.control("TP", []);
-        page.text(args);
-        page.text([roman(opt.help.as_deref().unwrap_or(""))]);
-    }
-    page
+        (args, opt.help.as_deref().unwrap_or(""))
+    });
+    definition_section(page, "OPTIONS", entries)
 }
 
 /// Create a `ENVIRONMENT` section.
@@ -277,20 +298,29 @@ fn env(page: Roff, environment: &[Env]) -> Roff {
         return page;
     }
 
-    let mut page = section(page, "ENVIRONMENT", vec![]);
-    for env in environment {
+    let entries = environment.iter().map(|env| {
         let mut args: Vec<Inline> = vec![bold(&env.name)];
         if let Some(ref default) = env.default {
-            if !args.is_empty() {
-                args.push(roman(" "));
-            }
+            args.push(roman(" "));
             args.push(roman("[default: "));
             args.push(italic(default));
             args.push(roman("]"));
         }
+        (args, env.help.as_deref().unwrap_or(""))
+    });
+    definition_section(page, "ENVIRONMENT", entries)
+}
+
+fn definition_section<'a>(
+    mut page: Roff,
+    title: &str,
+    entries: impl Iterator<Item = (Vec<Inline>, &'a str)>,
+) -> Roff {
+    page = section(page, title, vec![]);
+    for (args, help) in entries {
         page.control("TP", []);
         page.text(args);
-        page.text([roman(env.help.as_deref().unwrap_or(""))]);
+        page.text([roman(help)]);
     }
     page
 }
@@ -310,18 +340,23 @@ fn env(page: Roff, environment: &[Env]) -> Roff {
 ///
 ///        2      Optional error
 /// ```
-fn exit_status(page: Roff) -> Roff {
+fn exit_status(page: Roff, statuses: &[ExitStatus]) -> Roff {
+    let defaults;
+    let statuses = if statuses.is_empty() {
+        defaults = vec![
+            ExitStatus::new("0", "Successful program execution."),
+            ExitStatus::new("1", "Unsuccessful program execution."),
+            ExitStatus::new("101", "The program panicked."),
+        ];
+        &defaults
+    } else {
+        statuses
+    };
     let mut page = section(page, "EXIT STATUS", vec![]);
-    for (code, description) in [
-        ("0", "Successful program execution."),
-        ("1", "Unsuccessful program execution."),
-        ("101", "The program panicked."),
-    ]
-    .iter()
-    {
+    for status in statuses {
         page.control("TP", []);
-        page.text([bold(*code)]);
-        page.text([roman(*description)]);
+        page.text([bold(&status.code)]);
+        page.text([roman(&status.description)]);
     }
     page
 }
@@ -394,13 +429,6 @@ fn examples(page: Roff, examples: &[Example]) -> Roff {
     page
 }
 
-// NOTE(yw): This code was taken from the npm-install(1) command. The location
-// on your system may vary. In all honesty I just copy-pasted this. We should
-// probably port this to troff-rs at some point.
-//
-// ```sh
-// $ less /usr/share/man/man1/npm-install.1
-// ```
 fn init_list(page: &mut Roff) {
     page.control("P", []).control("RS", ["2"]).control("nf", []);
 }

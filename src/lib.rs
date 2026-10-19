@@ -1,7 +1,47 @@
 #![warn(missing_docs)]
 #![doc = include_str!("../README.md")]
 
-extern crate roff;
+macro_rules! impl_help {
+    ($type:ty) => {
+        impl $type {
+            /// Set the help text.
+            pub fn help(mut self, help: &str) -> Self {
+                self.help = Some(help.into());
+                self
+            }
+        }
+    };
+}
+
+macro_rules! impl_default_value {
+    ($type:ty) => {
+        impl $type {
+            /// Set the default value.
+            pub fn default_value(mut self, default: &str) -> Self {
+                self.default = Some(default.into());
+                self
+            }
+        }
+    };
+}
+
+macro_rules! impl_short_long {
+    ($type:ty) => {
+        impl $type {
+            /// Set the short option.
+            pub fn short(mut self, short: &str) -> Self {
+                self.short = Some(short.into());
+                self
+            }
+
+            /// Set the long option.
+            pub fn long(mut self, long: &str) -> Self {
+                self.long = Some(long.into());
+                self
+            }
+        }
+    };
+}
 
 mod arg;
 mod author;
@@ -19,6 +59,6 @@ pub use crate::author::Author;
 pub use crate::environment::Env;
 pub use crate::example::Example;
 pub use crate::flag::Flag;
-pub use crate::man::Manual;
+pub use crate::man::{ExitStatus, Manual};
 pub use crate::option::Opt;
 pub use crate::section::Section;

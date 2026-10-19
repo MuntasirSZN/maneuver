@@ -1,5 +1,3 @@
-extern crate man;
-
 use man::prelude::*;
 
 fn main() {

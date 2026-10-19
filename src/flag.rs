@@ -11,22 +11,7 @@ impl Flag {
     pub fn new() -> Self {
         Self::default()
     }
-
-    /// Set the short value.
-    pub fn short(mut self, short: &str) -> Self {
-        self.short = Some(short.into());
-        self
-    }
-
-    /// Set the long value.
-    pub fn long(mut self, long: &str) -> Self {
-        self.long = Some(long.into());
-        self
-    }
-
-    /// Set the help value.
-    pub fn help(mut self, help: &str) -> Self {
-        self.help = Some(help.into());
-        self
-    }
 }
+
+impl_help!(Flag);
+impl_short_long!(Flag);
