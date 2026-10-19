@@ -39,3 +39,9 @@ fn manual_has_no_version_by_default() {
     assert!(!page.contains(env!("CARGO_PKG_VERSION")));
     assert!(page.contains(".TH DEMO 1\n"));
 }
+
+#[test]
+fn crate_macros_report_the_calling_crate() {
+    assert_eq!(maneuver::crate_version!(), env!("CARGO_PKG_VERSION"));
+    assert_eq!(maneuver::crate_name!(), env!("CARGO_PKG_NAME"));
+}

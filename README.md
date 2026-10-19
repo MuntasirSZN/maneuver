@@ -88,7 +88,19 @@ The `version`, `date`, and `source` methods populate the corresponding man
 header metadata. No version is set by default, because the manual page
 describes the program that uses this crate rather than the crate itself; call
 `version("1.2.3")` to fill the field in and `without_version()` to leave it
-empty on purpose. Add application-specific exit codes with
+empty on purpose. The `maneuver::crate_version!` and `maneuver::crate_name!`
+macros expand at the call site, so they report the version and the name of the
+program being documented:
+
+```rust
+use maneuver::prelude::*;
+
+Manual::new(maneuver::crate_name!())
+    .version(maneuver::crate_version!())
+    .render();
+```
+
+Add application-specific exit codes with
 `status(ExitStatus::new("CODE", "description"))`, and use
 `Opt::separator(" ")` for option forms such as `--output FILE`.
 Call `without_exit_status()` to omit the section entirely.
