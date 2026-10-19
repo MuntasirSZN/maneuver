@@ -8,8 +8,8 @@ documentation = "https://docs.rs/maneuver"
 readme = "README.md"
 repository = "https://github.com/MuntasirSZN/maneuver"
 license = "MIT OR Apache-2.0"
-keywords = ["man", "manpage", "roff", "documentation"]
-categories = ["command-line-utilities", "documentation", "text-processing"]
+keywords = ["documentation", "man", "manpage", "roff"]
+categories = ["command-line-utilities", "text-processing"]
 
 [dependencies]
 roff = "1.1.1"
