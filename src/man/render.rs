@@ -1,5 +1,5 @@
 use super::*;
-use roff::{bold, italic, roman, Inline, Roff};
+use roff::{Inline, Roff, bold, italic, roman};
 
 pub(super) fn render(manual: Manual) -> String {
     let mut page = Roff::new();
@@ -47,7 +47,7 @@ pub(super) fn render(manual: Manual) -> String {
 /// ```
 fn about(page: Roff, name: &str, desc: &Option<String>) -> Roff {
     let desc = match desc {
-        Some(ref desc) => format!("{} - {}", name, desc),
+        Some(desc) => format!("{} - {}", name, desc),
         None => name.to_owned(),
     };
 

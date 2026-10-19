@@ -1,4 +1,4 @@
-use man::prelude::*;
+use maneuver::prelude::*;
 
 fn main() {
     let msg = Manual::new("auth-service")

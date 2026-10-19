@@ -1,16 +1,20 @@
-# man
-[![crates.io version][1]][2] [![build status][3]][4]
-[![downloads][5]][6] [![docs.rs docs][7]][8]
+# maneuver
+[![crates.io version][1]][2] [![downloads][3]][4] [![docs.rs docs][5]][6]
 
 Generate structured man pages using
 [roff-rs](https://github.com/killercup/roff-rs).
 
-- [Documentation][8]
+- [Documentation][6]
 - [Crates.io][2]
+
+---
+
+This crate was originally in https://github.com/rust-cli/man, but as there no maintenance for
+a long time, it was forked and is now maintained here.
 
 ## Usage
 ```rust
-use man::prelude::*;
+use maneuver::prelude::*;
 
 fn main() {
     let page = Manual::new("basic")
@@ -59,7 +63,7 @@ build:
 
 ```rust,no_run
 // build.rs
-use man::prelude::*;
+use maneuver::prelude::*;
 use std::{env, fs};
 
 fn main() {
@@ -93,7 +97,7 @@ Positional arguments support `Arg::optional()` and `Arg::variadic()`, and
 commands, subcommands, SEE ALSO, FILES, or any other project specific section:
 
 ```rust
-use man::prelude::*;
+use maneuver::prelude::*;
 
 Manual::new("git-like")
     .custom(
@@ -153,18 +157,16 @@ BASIC(1)                       General Commands Manual                          
 ## Installation
 If using [cargo-edit](https://github.com/killercup/cargo-edit), install with
 ```sh
-$ cargo add man
+$ cargo add maneuver
 ```
 Otherwise, install by adding to Cargo.toml file's dependency section.
 
 ## License
 [MIT](./LICENSE-MIT) OR [Apache-2.0](./LICENSE-APACHE)
 
-[1]: https://img.shields.io/crates/v/man.svg?style=flat-square
-[2]: https://crates.io/crates/man
-[3]: https://img.shields.io/travis/rust-clique/man.svg?style=flat-square
-[4]: https://travis-ci.org/rust-clique/man
-[5]: https://img.shields.io/crates/d/man.svg?style=flat-square
-[6]: https://crates.io/crates/man
-[7]: https://docs.rs/man/badge.svg
-[8]: https://docs.rs/man
+[1]: https://img.shields.io/crates/v/maneuver.svg?style=flat-square
+[2]: https://crates.io/crates/maneuver
+[3]: https://img.shields.io/crates/d/maneuver.svg?style=flat-square
+[4]: https://crates.io/crates/maneuver
+[5]: https://docs.rs/maneuver/badge.svg
+[6]: https://docs.rs/maneuver

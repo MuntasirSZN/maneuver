@@ -1,5 +1,5 @@
 use insta::assert_snapshot;
-use man::{Arg, Author, Env, Example, Flag, Manual, Opt, Section};
+use maneuver::{Arg, Author, Env, Example, Flag, Manual, Opt, Section};
 
 #[test]
 fn manual_snapshot_covers_all_sections() {

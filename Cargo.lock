@@ -83,8 +83,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32a66949e030da00e8c7d4434b251670a91556f4144941d37452769c25d58a53"
 
 [[package]]
-name = "man"
-version = "0.3.0"
+name = "maneuver"
+version = "0.1.0"
 dependencies = [
  "insta",
  "roff",

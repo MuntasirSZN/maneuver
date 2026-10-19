@@ -1,21 +1,25 @@
 use insta::assert_snapshot;
-use man::{Author, ExitStatus, Manual};
+use maneuver::{Author, ExitStatus, Manual};
 
 #[test]
 fn manual_renders_custom_exit_statuses() {
-    assert_snapshot!(Manual::new("demo")
-        .status(ExitStatus::new("64", "Command line usage error."))
-        .status(ExitStatus::new("70", "Internal software error."))
-        .without_version()
-        .render());
+    assert_snapshot!(
+        Manual::new("demo")
+            .status(ExitStatus::new("64", "Command line usage error."))
+            .status(ExitStatus::new("70", "Internal software error."))
+            .without_version()
+            .render()
+    );
 }
 
 #[test]
 fn manual_can_omit_exit_statuses() {
-    assert_snapshot!(Manual::new("demo")
-        .without_exit_status()
-        .without_version()
-        .render());
+    assert_snapshot!(
+        Manual::new("demo")
+            .without_exit_status()
+            .without_version()
+            .render()
+    );
 }
 
 #[test]
