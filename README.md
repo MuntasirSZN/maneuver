@@ -85,15 +85,18 @@ it does not install files or require a particular build system.
 ## Metadata and flexible sections
 
 The `version`, `date`, and `source` methods populate the corresponding man
-header metadata. The package version is used by default; call
-`without_version()` when it should be omitted. Add application-specific exit
-codes with `status(ExitStatus::new("CODE", "description"))`, and use
+header metadata. No version is set by default, because the manual page
+describes the program that uses this crate rather than the crate itself; call
+`version("1.2.3")` to fill the field in and `without_version()` to leave it
+empty on purpose. Add application-specific exit codes with
+`status(ExitStatus::new("CODE", "description"))`, and use
 `Opt::separator(" ")` for option forms such as `--output FILE`.
 Call `without_exit_status()` to omit the section entirely.
 
 Authors can contain additional text with repeated `Author::text` calls.
 Positional arguments support `Arg::optional()` and `Arg::variadic()`, and
-`Manual::arg` accepts either one `Arg` or a `Vec<Arg>`. Use `Section` for
+`Manual::arg` accepts either one `Arg` or a `Vec<Arg>`. Arguments with a
+`help` text are listed in an `ARGUMENTS` section. Use `Section` for
 commands, subcommands, SEE ALSO, FILES, or any other project specific section:
 
 ```rust
@@ -107,6 +110,44 @@ Manual::new("git-like")
     )
     .render();
 ```
+
+## Subcommands
+
+`Command` documents a subcommand. Its synopsis is derived from the command
+name and the flags, options and arguments it accepts, so it never drifts from
+the entries listed underneath it. A manual that has at least one command
+mentions `[COMMAND]` in its synopsis:
+
+```rust
+use maneuver::prelude::*;
+
+Manual::new("git-like")
+    .command(
+        Command::new("add")
+            .help("Add file contents to the index.")
+            .flag(Flag::new().long("--all").help("Add all changed files."))
+            .argument(Arg::new("PATH").help("The file to add.")),
+    )
+    .render();
+```
+
+Renders as:
+
+<pre>
+<b>SYNOPSIS</b>
+       <b>git-like</b> [COMMAND]
+
+<b>COMMANDS</b>
+       <b>add</b> [FLAGS] PATH
+              Add file contents to the index.
+
+              <b>--all</b>
+                     Add all changed files.
+
+              <i>PATH</i>
+                     The file to add.
+</pre>
+
 Preview by running:
 ```sh
 $ cargo run > /tmp/app.man; man /tmp/app.man

@@ -1,0 +1,29 @@
+---
+source: tests/manual/commands.rs
+expression: "Manual::new(\"demo\").command(Command::new(\"toolchain\").help(\"Install or uninstall the toolchain.\").argument(Arg::new(\"COMMAND\").optional()),).without_version().render()"
+---
+.ie \n(.g .ds Aq \(aq
+.el .ds Aq '
+.TH DEMO 1
+.SH NAME
+demo
+.SH SYNOPSIS
+\fBdemo\fR [COMMAND]
+.SH COMMANDS
+.TP
+\fBtoolchain\fR [COMMAND]
+Install or uninstall the toolchain.
+.RS 4
+.TP
+\fICOMMAND\fR
+.RE
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+Successful program execution.
+.TP
+\fB1\fR
+Unsuccessful program execution.
+.TP
+\fB101\fR
+The program panicked.

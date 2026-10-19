@@ -1,0 +1,28 @@
+---
+source: tests/manual/commands.rs
+expression: "Manual::new(\"demo\").command(Command::new(\"check\").help(\"Check availability for a file.\")).command(Command::new(\"clean\").help(\"Remove artifacts.\")).without_version().render()"
+---
+.ie \n(.g .ds Aq \(aq
+.el .ds Aq '
+.TH DEMO 1
+.SH NAME
+demo
+.SH SYNOPSIS
+\fBdemo\fR [COMMAND]
+.SH COMMANDS
+.TP
+\fBcheck\fR
+Check availability for a file.
+.TP
+\fBclean\fR
+Remove artifacts.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+Successful program execution.
+.TP
+\fB1\fR
+Unsuccessful program execution.
+.TP
+\fB101\fR
+The program panicked.

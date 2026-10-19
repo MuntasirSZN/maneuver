@@ -45,6 +45,7 @@ macro_rules! impl_short_long {
 
 mod arg;
 mod author;
+mod command;
 mod environment;
 mod example;
 mod flag;
@@ -56,6 +57,7 @@ pub mod prelude;
 
 pub use crate::arg::Arg;
 pub use crate::author::Author;
+pub use crate::command::Command;
 pub use crate::environment::Env;
 pub use crate::example::Example;
 pub use crate::flag::Flag;

@@ -19,6 +19,9 @@ Enable verbose logging.
 .TP
 \fB\-o\fR, \fB\-\-output\fR=\fIoutput\fR [default: \fIstdout\fR]
 The output destination.
+.SH ARGUMENTS
+.TP
+\fIpath\fR
 .SH ENVIRONMENT
 .TP
 \fBPORT\fR [default: \fI3000\fR]

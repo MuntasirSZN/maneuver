@@ -11,6 +11,11 @@ demo \- short description
 \fBdemo\fR input output
 .SH DESCRIPTION
 long description
+.SH ARGUMENTS
+.TP
+\fIinput\fR
+.TP
+\fIoutput\fR
 .SH "EXIT STATUS"
 .TP
 \fB0\fR

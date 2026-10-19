@@ -47,6 +47,7 @@ pub struct Manual {
     options: Vec<Opt>,
     environment: Vec<Env>,
     arguments: Vec<Arg>,
+    commands: Vec<Command>,
     custom_sections: Vec<Section>,
     examples: Vec<Example>,
     statuses: Option<Vec<ExitStatus>>,
@@ -67,10 +68,11 @@ impl Manual {
             options: vec![],
             arguments: vec![],
             environment: vec![],
+            commands: vec![],
             custom_sections: vec![],
             examples: vec![],
             statuses: None,
-            version: Some(env!("CARGO_PKG_VERSION").into()),
+            version: None,
             date: None,
             source: None,
         }
@@ -112,6 +114,12 @@ impl Manual {
         self
     }
 
+    /// Add a subcommand.
+    pub fn command(mut self, command: Command) -> Self {
+        self.commands.push(command);
+        self
+    }
+
     /// Add a custom section
     pub fn custom(mut self, custom_section: Section) -> Self {
         self.custom_sections.push(custom_section);
@@ -137,6 +145,9 @@ impl Manual {
     }
 
     /// Set the version displayed by the man-page formatter.
+    ///
+    /// No version is set by default: the manual page describes the program
+    /// that uses this crate, not the crate itself.
     pub fn version<S: Into<String>>(mut self, version: S) -> Self {
         self.version = Some(version.into());
         self

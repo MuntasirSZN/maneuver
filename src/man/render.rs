@@ -24,10 +24,13 @@ pub(super) fn render(manual: Manual) -> String {
         &manual.flags,
         &manual.options,
         &manual.arguments,
+        !manual.commands.is_empty(),
     );
     page = description(page, &manual.description);
+    page = commands(page, &manual.commands);
     page = flags(page, &manual.flags);
     page = options(page, &manual.options);
+    page = arguments(page, &manual.arguments);
     page = env(page, &manual.environment);
     for section in manual.custom_sections {
         page = custom(page, section);
@@ -70,7 +73,14 @@ fn description(page: Roff, desc: &Option<String>) -> Roff {
 }
 
 /// Create a `SYNOPSIS` section.
-fn synopsis(page: Roff, name: &str, flags: &[Flag], options: &[Opt], args: &[Arg]) -> Roff {
+fn synopsis(
+    page: Roff,
+    name: &str,
+    flags: &[Flag],
+    options: &[Opt],
+    args: &[Arg],
+    has_commands: bool,
+) -> Roff {
     let mut msg: Vec<Inline> = vec![bold(name)];
     let flags = match flags.len() {
         0 => "",
@@ -87,7 +97,101 @@ fn synopsis(page: Roff, name: &str, flags: &[Flag], options: &[Opt], args: &[Arg
         msg.push(roman(format!(" {}", arg.render())));
     }
 
+    if has_commands {
+        msg.push(roman(" [COMMAND]"));
+    }
+
     section(page, "SYNOPSIS", msg)
+}
+
+/// Create a `COMMANDS` section.
+///
+/// Each command is rendered as a tagged paragraph holding its synopsis and
+/// description. The options, flags and arguments a command accepts are nested
+/// below it.
+///
+/// ## Formatting
+/// ```txt
+/// COMMANDS
+///        check [OPTIONS] [PATH]
+///               Check availability for a file or directory.
+///        .RS 4
+///        .TP
+///        --all-targets
+///               Run the check for all targets.
+///        .RE
+/// ```
+fn commands(page: Roff, commands: &[Command]) -> Roff {
+    if commands.is_empty() {
+        return page;
+    }
+
+    let mut page = section(page, "COMMANDS", vec![]);
+    for command in commands {
+        page.control("TP", []);
+        let details = command.details();
+        if details.is_empty() {
+            page.text([bold(&command.name)]);
+        } else {
+            page.text([bold(&command.name), roman(details)]);
+        }
+        if let Some(help) = &command.help {
+            page.text([roman(help)]);
+        }
+        page = command_entries(page, command);
+    }
+    page
+}
+
+/// Renders the options, flags and arguments a command accepts.
+fn command_entries(mut page: Roff, command: &Command) -> Roff {
+    if command.options.is_empty() && command.flags.is_empty() && command.arguments.is_empty() {
+        return page;
+    }
+
+    page.control("RS", ["4"]);
+    page = definition_list(
+        page,
+        command
+            .flags
+            .iter()
+            .map(|flag| (flag_args(flag), flag.help.as_deref().unwrap_or(""))),
+    );
+    page = definition_list(
+        page,
+        command
+            .options
+            .iter()
+            .map(|opt| (option_args(opt), opt.help.as_deref().unwrap_or(""))),
+    );
+    page = definition_list(
+        page,
+        command
+            .arguments
+            .iter()
+            .map(|arg| (vec![italic(&arg.name)], arg.help.as_deref().unwrap_or(""))),
+    );
+    page.control("RE", []);
+    page
+}
+
+/// Create an `ARGUMENTS` section.
+///
+/// ## Formatting
+/// ```txt
+/// ARGUMENTS
+///        PATH
+///               The file to read.
+/// ```
+fn arguments(page: Roff, args: &[Arg]) -> Roff {
+    if args.is_empty() {
+        return page;
+    }
+
+    let entries = args
+        .iter()
+        .map(|arg| (vec![italic(&arg.name)], arg.help.as_deref().unwrap_or("")));
+    definition_section(page, "ARGUMENTS", entries)
 }
 
 /// Create a `AUTHOR` or `AUTHORS` section.
@@ -132,23 +236,10 @@ fn flags(page: Roff, flags: &[Flag]) -> Roff {
         return page;
     }
 
-    let mut page = section(page, "FLAGS", vec![]);
-    for flag in flags {
-        let mut args: Vec<Inline> = vec![];
-        if let Some(ref short) = flag.short {
-            args.push(bold(short));
-        }
-        if let Some(ref long) = flag.long {
-            if !args.is_empty() {
-                args.push(roman(", "));
-            }
-            args.push(bold(long));
-        }
-        page.control("TP", []);
-        page.text(args);
-        page.text([roman(flag.help.as_deref().unwrap_or(""))]);
-    }
-    page
+    let entries = flags
+        .iter()
+        .map(|flag| (flag_args(flag), flag.help.as_deref().unwrap_or("")));
+    definition_section(page, "FLAGS", entries)
 }
 
 /// Create a `OPTIONS` section.
@@ -162,28 +253,48 @@ fn options(page: Roff, options: &[Opt]) -> Roff {
         return page;
     }
 
-    let entries = options.iter().map(|opt| {
-        let mut args: Vec<Inline> = vec![];
-        if let Some(ref short) = opt.short {
-            args.push(bold(short));
-        }
-        if let Some(ref long) = opt.long {
-            if !args.is_empty() {
-                args.push(roman(", "));
-            }
-            args.push(bold(long));
-        }
-        args.push(roman(&opt.separator));
-        args.push(italic(&opt.name));
-        if let Some(ref default) = opt.default {
-            args.push(roman(" "));
-            args.push(roman("[default: "));
-            args.push(italic(default));
-            args.push(roman("]"));
-        }
-        (args, opt.help.as_deref().unwrap_or(""))
-    });
+    let entries = options
+        .iter()
+        .map(|opt| (option_args(opt), opt.help.as_deref().unwrap_or("")));
     definition_section(page, "OPTIONS", entries)
+}
+
+/// Renders the inline arguments of a flag.
+fn flag_args(flag: &Flag) -> Vec<Inline> {
+    let mut args: Vec<Inline> = vec![];
+    if let Some(ref short) = flag.short {
+        args.push(bold(short));
+    }
+    if let Some(ref long) = flag.long {
+        if !args.is_empty() {
+            args.push(roman(", "));
+        }
+        args.push(bold(long));
+    }
+    args
+}
+
+/// Renders the inline arguments of an option.
+fn option_args(opt: &Opt) -> Vec<Inline> {
+    let mut args: Vec<Inline> = vec![];
+    if let Some(ref short) = opt.short {
+        args.push(bold(short));
+    }
+    if let Some(ref long) = opt.long {
+        if !args.is_empty() {
+            args.push(roman(", "));
+        }
+        args.push(bold(long));
+    }
+    args.push(roman(&opt.separator));
+    args.push(italic(&opt.name));
+    if let Some(ref default) = opt.default {
+        args.push(roman(" "));
+        args.push(roman("[default: "));
+        args.push(italic(default));
+        args.push(roman("]"));
+    }
+    args
 }
 
 /// Create a `ENVIRONMENT` section.
@@ -212,15 +323,28 @@ fn env(page: Roff, environment: &[Env]) -> Roff {
 }
 
 fn definition_section<'a>(
-    mut page: Roff,
+    page: Roff,
     title: &str,
     entries: impl Iterator<Item = (Vec<Inline>, &'a str)>,
 ) -> Roff {
-    page = section(page, title, vec![]);
+    let page = section(page, title, vec![]);
+    definition_list(page, entries)
+}
+
+/// Emits a definition list.
+///
+/// Every entry becomes a tagged paragraph holding the arguments and their
+/// description. The description is omitted when it is empty.
+fn definition_list<'a>(
+    mut page: Roff,
+    entries: impl Iterator<Item = (Vec<Inline>, &'a str)>,
+) -> Roff {
     for (args, help) in entries {
         page.control("TP", []);
         page.text(args);
-        page.text([roman(help)]);
+        if !help.is_empty() {
+            page.text([roman(help)]);
+        }
     }
     page
 }

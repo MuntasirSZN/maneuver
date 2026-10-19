@@ -15,10 +15,8 @@ demo
 where to write
 .TP
 \fB\-i\fR=\fIinput\fR
-
 .TP
 \fB\-\-mode\fR=\fImode\fR
-
 .TP
 =\fIcount\fR
 number of items

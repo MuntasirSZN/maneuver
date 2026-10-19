@@ -2,6 +2,7 @@
 #[derive(Debug, Clone)]
 pub struct Arg {
     pub(crate) name: String,
+    pub(crate) help: Option<String>,
     pub(crate) optional: bool,
     pub(crate) variadic: bool,
 }
@@ -11,6 +12,7 @@ impl Arg {
     pub fn new(name: &str) -> Self {
         Self {
             name: name.into(),
+            help: None,
             optional: false,
             variadic: false,
         }
@@ -28,14 +30,21 @@ impl Arg {
         self
     }
 
+    /// Renders the argument the way it is spelled in a synopsis.
+    ///
+    /// Optional arguments are wrapped in brackets and variadic arguments are
+    /// suffixed with an ellipsis.
     pub(crate) fn render(&self) -> String {
-        let suffix = if self.variadic {
-            "..."
-        } else if self.optional {
-            "?"
+        let mut rendered = if self.optional {
+            format!("[{}]", self.name)
         } else {
-            ""
+            self.name.clone()
         };
-        format!("{}{}", self.name, suffix)
+        if self.variadic {
+            rendered.push_str("...");
+        }
+        rendered
     }
 }
+
+impl_help!(Arg);

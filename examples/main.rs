@@ -29,6 +29,17 @@ fn main() {
                 .long("--port")
                 .help("The network port to listen to."),
         )
+        .command(
+            Command::new("login")
+                .help("Authenticate a member.")
+                .flag(
+                    Flag::new()
+                        .long("--token")
+                        .help("Use a token instead of a password."),
+                )
+                .argument(Arg::new("MEMBER").help("The member to authenticate.")),
+        )
+        .command(Command::new("logout").help("Forget the current member."))
         .example(
             Example::new()
                 .text("listen on port 3000")

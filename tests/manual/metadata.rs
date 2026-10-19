@@ -34,7 +34,8 @@ fn manual_renders_metadata_and_path() {
 }
 
 #[test]
-fn manual_uses_package_version_by_default() {
+fn manual_has_no_version_by_default() {
     let page = Manual::new("demo").render();
-    assert!(page.contains(env!("CARGO_PKG_VERSION")));
+    assert!(!page.contains(env!("CARGO_PKG_VERSION")));
+    assert!(page.contains(".TH DEMO 1\n"));
 }

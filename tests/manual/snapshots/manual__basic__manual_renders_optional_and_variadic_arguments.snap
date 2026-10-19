@@ -8,7 +8,12 @@ expression: "Manual::new(\"demo\").arg(Arg::new(\"config\").optional()).arg(Arg:
 .SH NAME
 demo
 .SH SYNOPSIS
-\fBdemo\fR config? files...
+\fBdemo\fR [config] files...
+.SH ARGUMENTS
+.TP
+\fIconfig\fR
+.TP
+\fIfiles\fR
 .SH "EXIT STATUS"
 .TP
 \fB0\fR
