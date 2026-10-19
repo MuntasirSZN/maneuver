@@ -1,12 +1,12 @@
 [package]
 name = "man"
 version = "0.3.0"
-license = "MIT OR Apache-2.0"
-repository = "https://github.com/rust-clique/man"
-documentation = "https://docs.rs/man"
+edition = "2015"
 description = "Generate structured man pages"
-authors = ["Yoshua Wuyts <yoshuawuyts@gmail.com>"]
+documentation = "https://docs.rs/man"
 readme = "README.md"
+repository = "https://github.com/rust-clique/man"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
 roff = "0.1.0"

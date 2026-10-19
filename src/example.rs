@@ -1,3 +1,5 @@
+#![allow(missing_docs)]
+
 /// Add a examples section
 #[derive(Debug, Clone, Default)]
 pub struct Example {

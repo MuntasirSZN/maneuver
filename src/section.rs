@@ -6,6 +6,7 @@ pub struct Section {
 }
 
 impl Section {
+  /// Create a new section with the given name
   pub fn new(name: &str) -> Self {
     Self {
       name: name.into(),
@@ -13,6 +14,7 @@ impl Section {
     }
   }
 
+  /// Add a paragraph to the section
   pub fn paragraph(mut self, text: &str) -> Self {
     self.paragraphs.push(text.into());
     self

@@ -5,6 +5,7 @@ pub struct Arg {
 }
 
 impl Arg {
+  /// Create a new positional argument.
   pub fn new(name: &str) -> Self {
     Self { name: name.into() }
   }
