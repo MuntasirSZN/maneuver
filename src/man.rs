@@ -1,5 +1,5 @@
 use super::*;
-use roff::{bold, italic, list, Roff, Troffable};
+use roff::{bold, italic, roman, Inline, Roff};
 
 /// The main man page struct.
 #[derive(Debug, Clone)]
@@ -91,8 +91,8 @@ impl Manual {
 
     /// Render to a string.
     pub fn render(self) -> String {
-        let man_num = 1;
-        let mut page = Roff::new(&self.name, man_num);
+        let mut page = Roff::new();
+        page.control("TH", [self.name.to_uppercase().as_str(), "1"]);
         page = about(page, &self.name, &self.about);
         page = synopsis(
             page,
@@ -128,7 +128,7 @@ fn about(page: Roff, name: &str, desc: &Option<String>) -> Roff {
         None => name.to_owned(),
     };
 
-    page.section("NAME", &[desc])
+    section(page, "NAME", vec![roman(desc)])
 }
 
 /// Create a `DESCRIPTION` section.
@@ -140,7 +140,7 @@ fn about(page: Roff, name: &str, desc: &Option<String>) -> Roff {
 /// ```
 fn description(page: Roff, desc: &Option<String>) -> Roff {
     if let Some(desc) = desc {
-        page.section("DESCRIPTION", std::slice::from_ref(desc))
+        section(page, "DESCRIPTION", vec![roman(desc)])
     } else {
         page
     }
@@ -148,25 +148,23 @@ fn description(page: Roff, desc: &Option<String>) -> Roff {
 
 /// Create a `SYNOPSIS` section.
 fn synopsis(page: Roff, name: &str, flags: &[Flag], options: &[Opt], args: &[Arg]) -> Roff {
+    let mut msg: Vec<Inline> = vec![bold(name)];
     let flags = match flags.len() {
-        0 => "".into(),
-        _ => " [FLAGS]".into(),
+        0 => "",
+        _ => " [FLAGS]",
     };
     let options = match options.len() {
-        0 => "".into(),
-        _ => " [OPTIONS]".into(),
+        0 => "",
+        _ => " [OPTIONS]",
     };
-
-    let mut msg = vec![];
-    msg.push(bold(name));
-    msg.push(flags);
-    msg.push(options);
+    msg.push(roman(flags));
+    msg.push(roman(options));
 
     for arg in args {
-        msg.push(format!(" {}", arg.name));
+        msg.push(roman(format!(" {}", arg.name)));
     }
 
-    page.section("SYNOPSIS", &msg)
+    section(page, "SYNOPSIS", msg)
 }
 
 /// Create a `AUTHOR` or `AUTHORS` section.
@@ -184,22 +182,17 @@ fn authors(page: Roff, authors: &[Author]) -> Roff {
         _ => "AUTHORS",
     };
 
-    let mut auth_values = vec![];
-    auth_values.push(init_list());
-    let mut authors = authors.iter().peekable();
-    while let Some(author) = authors.next() {
-        auth_values.push(author.name.to_owned());
-
+    let mut page = page;
+    page.control("SH", [title]);
+    init_list(&mut page);
+    for author in authors {
+        let mut value = vec![roman(author.name.to_owned())];
         if let Some(ref email) = author.email {
-            auth_values.push(format!(" <{}>", email))
+            value.push(roman(format!(" <{}>", email)))
         };
-
-        if authors.peek().is_some() {
-            auth_values.push(String::from("\n"));
-        }
+        page.text(value);
     }
-
-    page.section(title, &auth_values)
+    page
 }
 
 /// Create a `FLAGS` section.
@@ -213,30 +206,23 @@ fn flags(page: Roff, flags: &[Flag]) -> Roff {
         return page;
     }
 
-    let last = flags.len() - 1;
-    let mut arr: Vec<String> = vec![];
-    for (index, flag) in flags.iter().enumerate() {
-        let mut args: Vec<String> = vec![];
+    let mut page = section(page, "FLAGS", vec![]);
+    for flag in flags {
+        let mut args: Vec<Inline> = vec![];
         if let Some(ref short) = flag.short {
             args.push(bold(short));
         }
         if let Some(ref long) = flag.long {
             if !args.is_empty() {
-                args.push(", ".to_string());
+                args.push(roman(", "));
             }
             args.push(bold(long));
         }
-        let desc = match flag.help {
-            Some(ref desc) => desc.to_string(),
-            None => "".to_string(),
-        };
-        arr.push(list(&args, &[desc]));
-
-        if index != last {
-            arr.push(String::from("\n\n"));
-        }
+        page.control("TP", []);
+        page.text(args);
+        page.text([roman(flag.help.as_deref().unwrap_or(""))]);
     }
-    page.section("FLAGS", &arr)
+    page
 }
 
 /// Create a `OPTIONS` section.
@@ -250,42 +236,33 @@ fn options(page: Roff, options: &[Opt]) -> Roff {
         return page;
     }
 
-    let last = options.len() - 1;
-    let mut arr: Vec<String> = vec![];
-    for (index, opt) in options.iter().enumerate() {
-        let mut args: Vec<String> = vec![];
+    let mut page = section(page, "OPTIONS", vec![]);
+    for opt in options {
+        let mut args: Vec<Inline> = vec![];
         if let Some(ref short) = opt.short {
             args.push(bold(short));
         }
         if let Some(ref long) = opt.long {
             if !args.is_empty() {
-                args.push(", ".to_string());
+                args.push(roman(", "));
             }
             args.push(bold(long));
         }
-        args.push("=".into());
+        args.push(roman("="));
         args.push(italic(&opt.name));
         if let Some(ref default) = opt.default {
             if !args.is_empty() {
-                args.push(" ".to_string());
+                args.push(roman(" "));
             }
-            args.push("[".into());
-            args.push("default:".into());
-            args.push(" ".into());
+            args.push(roman("[default: "));
             args.push(italic(default));
-            args.push("]".into());
+            args.push(roman("]"));
         }
-        let desc = match opt.help {
-            Some(ref desc) => desc.to_string(),
-            None => "".to_string(),
-        };
-        arr.push(list(&args, &[desc]));
-
-        if index != last {
-            arr.push(String::from("\n\n"));
-        }
+        page.control("TP", []);
+        page.text(args);
+        page.text([roman(opt.help.as_deref().unwrap_or(""))]);
     }
-    page.section("OPTIONS", &arr)
+    page
 }
 
 /// Create a `ENVIRONMENT` section.
@@ -300,32 +277,22 @@ fn env(page: Roff, environment: &[Env]) -> Roff {
         return page;
     }
 
-    let last = environment.len() - 1;
-    let mut arr: Vec<String> = vec![];
-    for (index, env) in environment.iter().enumerate() {
-        let mut args: Vec<String> = vec![];
-        args.push(bold(&env.name));
+    let mut page = section(page, "ENVIRONMENT", vec![]);
+    for env in environment {
+        let mut args: Vec<Inline> = vec![bold(&env.name)];
         if let Some(ref default) = env.default {
             if !args.is_empty() {
-                args.push(" ".to_string());
+                args.push(roman(" "));
             }
-            args.push("[".into());
-            args.push("default:".into());
-            args.push(" ".into());
+            args.push(roman("[default: "));
             args.push(italic(default));
-            args.push("]".into());
+            args.push(roman("]"));
         }
-        let desc = match env.help {
-            Some(ref desc) => desc.to_string(),
-            None => "".to_string(),
-        };
-        arr.push(list(&args, &[desc]));
-
-        if index != last {
-            arr.push(String::from("\n\n"));
-        }
+        page.control("TP", []);
+        page.text(args);
+        page.text([roman(env.help.as_deref().unwrap_or(""))]);
     }
-    page.section("ENVIRONMENT", &arr)
+    page
 }
 
 /// Create a `EXIT STATUS` section.
@@ -344,14 +311,19 @@ fn env(page: Roff, environment: &[Env]) -> Roff {
 ///        2      Optional error
 /// ```
 fn exit_status(page: Roff) -> Roff {
-    page.section(
-        "EXIT STATUS",
-        &[
-            list(&[bold("0")], &["Successful program execution.\n\n"]),
-            list(&[bold("1")], &["Unsuccessful program execution.\n\n"]),
-            list(&[bold("101")], &["The program panicked."]),
-        ],
-    )
+    let mut page = section(page, "EXIT STATUS", vec![]);
+    for (code, description) in [
+        ("0", "Successful program execution."),
+        ("1", "Unsuccessful program execution."),
+        ("101", "The program panicked."),
+    ]
+    .iter()
+    {
+        page.control("TP", []);
+        page.text([bold(*code)]);
+        page.text([roman(*description)]);
+    }
+    page
 }
 
 /// Create a custom section.
@@ -369,12 +341,15 @@ fn exit_status(page: Roff) -> Roff {
 ///
 /// ```
 fn custom(page: Roff, custom_section: Section) -> Roff {
-    let mut paragraphs: Vec<String> = vec![];
-    for paragraph in custom_section.paragraphs.into_iter() {
-        paragraphs.push(paragraph);
-        paragraphs.push("\n\n".into())
+    let mut page = section(page, &custom_section.name, vec![]);
+    let paragraph_count = custom_section.paragraphs.len();
+    for (index, paragraph) in custom_section.paragraphs.into_iter().enumerate() {
+        page.text([roman(paragraph)]);
+        if index + 1 != paragraph_count {
+            page.text([roman("\n")]);
+        }
     }
-    page.section(&custom_section.name, &paragraphs)
+    page
 }
 
 /// Create an examples section
@@ -397,7 +372,7 @@ fn examples(page: Roff, examples: &[Example]) -> Roff {
     if examples.is_empty() {
         return page;
     };
-    let mut arr = vec![];
+    let mut page = section(page, "EXAMPLES", vec![]);
     for example in examples {
         let text = example.text.unwrap_or("");
         let mut full_command = String::from(example.prompt);
@@ -405,21 +380,18 @@ fn examples(page: Roff, examples: &[Example]) -> Roff {
             full_command.push(' ');
             full_command.push_str(command);
         };
-        let output = match example.output {
-            Some(output) => {
-                // For now, we need to manually add the line break in the list
-                // see https://github.com/killercup/roff-rs/issues/5
-                let mut full_output = String::from("\n.br\n");
-                full_output.push_str(output);
-                full_output.push('\n');
-                full_output
-            }
-            None => String::from("\n"),
-        };
-        let example = list(&[text], &[bold(full_command.as_str()), output]);
-        arr.push(example);
+        page.control("TP", []);
+        page.text([roman(text)]);
+        let mut command = vec![bold(full_command)];
+        if let Some(output) = example.output {
+            command.push(Inline::LineBreak);
+            command.push(roman(output));
+        } else {
+            command.push(roman("\n"));
+        }
+        page.text(command);
     }
-    page.section("examples", &arr)
+    page
 }
 
 // NOTE(yw): This code was taken from the npm-install(1) command. The location
@@ -429,6 +401,14 @@ fn examples(page: Roff, examples: &[Example]) -> Roff {
 // ```sh
 // $ less /usr/share/man/man1/npm-install.1
 // ```
-fn init_list() -> String {
-    String::from(".P\n.RS 2\n.nf\n")
+fn init_list(page: &mut Roff) {
+    page.control("P", []).control("RS", ["2"]).control("nf", []);
+}
+
+fn section(mut page: Roff, title: &str, first_line: Vec<Inline>) -> Roff {
+    page.control("SH", [title]);
+    if !first_line.is_empty() {
+        page.text(first_line);
+    }
+    page
 }

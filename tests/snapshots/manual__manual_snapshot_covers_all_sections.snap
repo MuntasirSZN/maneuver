@@ -2,6 +2,8 @@
 source: tests/manual.rs
 expression: page
 ---
+.ie \n(.g .ds Aq \(aq
+.el .ds Aq '
 .TH AUTH-SERVICE 1
 .SH NAME
 auth\-service \- authorize & authenticate members
@@ -21,21 +23,18 @@ The output destination.
 .TP
 \fBPORT\fR [default: \fI3000\fR]
 The network port to listen to.
-.SH USAGE NOTE
+.SH "usage note"
 The service should be started before requests arrive.
 
+
 Use the environment variable to select its port.
-
-
-.SH EXIT STATUS
+.SH "EXIT STATUS"
 .TP
 \fB0\fR
 Successful program execution.
-
 .TP
 \fB1\fR
 Unsuccessful program execution.
-
 .TP
 \fB101\fR
 The program panicked.
@@ -45,7 +44,6 @@ run the service
 \fB$ auth\-service \-\-verbose\fR
 .br
 now listening
-
 .SH AUTHORS
 .P
 .RS 2

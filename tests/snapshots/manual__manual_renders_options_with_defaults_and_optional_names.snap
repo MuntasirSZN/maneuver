@@ -2,6 +2,8 @@
 source: tests/manual.rs
 expression: "Manual::new(\"demo\").option(Opt::new(\"output\").short(\"-o\").long(\"--output\").default_value(\"stdout\").help(\"where to write\"),).option(Opt::new(\"input\").short(\"-i\")).option(Opt::new(\"mode\").long(\"--mode\")).option(Opt::new(\"count\").help(\"number of items\")).render()"
 ---
+.ie \n(.g .ds Aq \(aq
+.el .ds Aq '
 .TH DEMO 1
 .SH NAME
 demo
@@ -11,27 +13,22 @@ demo
 .TP
 \fB\-o\fR, \fB\-\-output\fR=\fIoutput\fR [default: \fIstdout\fR]
 where to write
-
 .TP
 \fB\-i\fR=\fIinput\fR
-
 
 .TP
 \fB\-\-mode\fR=\fImode\fR
 
-
 .TP
 =\fIcount\fR
 number of items
-.SH EXIT STATUS
+.SH "EXIT STATUS"
 .TP
 \fB0\fR
 Successful program execution.
-
 .TP
 \fB1\fR
 Unsuccessful program execution.
-
 .TP
 \fB101\fR
 The program panicked.

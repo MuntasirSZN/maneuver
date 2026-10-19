@@ -9,7 +9,7 @@ repository = "https://github.com/rust-clique/man"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-roff = "0.1.0"
+roff = "1.1.1"
 
 [dev-dependencies]
 insta = "1"

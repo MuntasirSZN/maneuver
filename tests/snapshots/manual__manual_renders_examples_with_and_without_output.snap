@@ -2,20 +2,20 @@
 source: tests/manual.rs
 expression: "Manual::new(\"demo\").example(Example::new().text(\"run in debug mode\").command(\"demo --debug\").output(\"debugging enabled\"),).example(Example::new().prompt(\"#\").command(\"demo\").text(\"run as root\"),).example(Example::new().text(\"no command\")).render()"
 ---
+.ie \n(.g .ds Aq \(aq
+.el .ds Aq '
 .TH DEMO 1
 .SH NAME
 demo
 .SH SYNOPSIS
 \fBdemo\fR
-.SH EXIT STATUS
+.SH "EXIT STATUS"
 .TP
 \fB0\fR
 Successful program execution.
-
 .TP
 \fB1\fR
 Unsuccessful program execution.
-
 .TP
 \fB101\fR
 The program panicked.
@@ -28,6 +28,7 @@ debugging enabled
 .TP
 run as root
 \fB# demo\fR
+
 .TP
 no command
 \fB$\fR
