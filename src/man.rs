@@ -184,17 +184,17 @@ fn authors(page: Roff, authors: &[Author]) -> Roff {
         _ => "AUTHORS",
     };
 
-    let last = authors.len() - 1;
     let mut auth_values = vec![];
     auth_values.push(init_list());
-    for (index, author) in authors.iter().enumerate() {
+    let mut authors = authors.iter().peekable();
+    while let Some(author) = authors.next() {
         auth_values.push(author.name.to_owned());
 
         if let Some(ref email) = author.email {
             auth_values.push(format!(" <{}>", email))
         };
 
-        if index != last {
+        if authors.peek().is_some() {
             auth_values.push(String::from("\n"));
         }
     }
