@@ -7,4 +7,4 @@
 //!   let msg = Manual::new("my-app").render();
 //! }
 //! ```
-pub use crate::{Arg, Author, Env, Example, ExitStatus, Flag, Manual, Opt, Section};
+pub use crate::{Arg, Author, Env, Example, ExitStatus, Flag, IntoArgs, Manual, Opt, Section};

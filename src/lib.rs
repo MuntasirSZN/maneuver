@@ -59,6 +59,6 @@ pub use crate::author::Author;
 pub use crate::environment::Env;
 pub use crate::example::Example;
 pub use crate::flag::Flag;
-pub use crate::man::{ExitStatus, Manual};
+pub use crate::man::{ExitStatus, IntoArgs, Manual};
 pub use crate::option::Opt;
 pub use crate::section::Section;

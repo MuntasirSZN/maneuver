@@ -88,9 +88,9 @@ codes with `status(ExitStatus::new("CODE", "description"))`, and use
 Call `without_exit_status()` to omit the section entirely.
 
 Authors can contain additional text with repeated `Author::text` calls.
-Positional arguments support `Arg::optional()` and `Arg::variadic()`. Use
-`Section` for commands, subcommands, SEE ALSO, FILES, or any other project
-specific section:
+Positional arguments support `Arg::optional()` and `Arg::variadic()`, and
+`Manual::arg` accepts either one `Arg` or a `Vec<Arg>`. Use `Section` for
+commands, subcommands, SEE ALSO, FILES, or any other project specific section:
 
 ```rust
 use man::prelude::*;

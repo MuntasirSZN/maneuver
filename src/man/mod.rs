@@ -8,6 +8,24 @@ pub struct ExitStatus {
     description: String,
 }
 
+/// Values accepted by [`Manual::arg`].
+pub trait IntoArgs {
+    /// Append positional arguments to a manual.
+    fn append_to(self, arguments: &mut Vec<Arg>);
+}
+
+impl IntoArgs for Arg {
+    fn append_to(self, arguments: &mut Vec<Arg>) {
+        arguments.push(self);
+    }
+}
+
+impl IntoArgs for Vec<Arg> {
+    fn append_to(self, arguments: &mut Vec<Arg>) {
+        arguments.extend(self);
+    }
+}
+
 impl ExitStatus {
     /// Create an exit status entry.
     pub fn new(code: &str, description: &str) -> Self {
@@ -148,8 +166,8 @@ impl Manual {
     }
 
     /// Add a positional argument. Items are displayed in insertion order.
-    pub fn arg(mut self, arg: Arg) -> Self {
-        self.arguments.push(arg);
+    pub fn arg<A: IntoArgs>(mut self, args: A) -> Self {
+        args.append_to(&mut self.arguments);
         self
     }
 

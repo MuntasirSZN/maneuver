@@ -25,3 +25,14 @@ fn manual_renders_optional_and_variadic_arguments() {
         .without_version()
         .render());
 }
+
+#[test]
+fn manual_accepts_argument_vectors() {
+    assert_snapshot!(Manual::new("demo")
+        .arg(vec![
+            Arg::new("config").optional(),
+            Arg::new("files").variadic(),
+        ])
+        .without_version()
+        .render());
+}
