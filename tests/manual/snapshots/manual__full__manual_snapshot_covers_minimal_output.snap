@@ -1,6 +1,6 @@
 ---
-source: tests/manual.rs
-expression: "Manual::new(\"demo\").author(Author::new(\"Alice\")).author(Author::new(\"Bob\").email(\"bob@example.com\")).render()"
+source: tests/manual/full.rs
+expression: "Manual::new(\"demo\").without_version().render()"
 ---
 .ie \n(.g .ds Aq \(aq
 .el .ds Aq '
@@ -19,9 +19,3 @@ Unsuccessful program execution.
 .TP
 \fB101\fR
 The program panicked.
-.SH AUTHORS
-.P
-.RS 2
-.nf
-Alice
-Bob <bob@example.com>

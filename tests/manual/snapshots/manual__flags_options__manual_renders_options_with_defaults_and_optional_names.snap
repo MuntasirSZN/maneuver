@@ -1,6 +1,6 @@
 ---
-source: tests/manual.rs
-expression: "Manual::new(\"demo\").option(Opt::new(\"output\").short(\"-o\").long(\"--output\").default_value(\"stdout\").help(\"where to write\"),).option(Opt::new(\"input\").short(\"-i\")).option(Opt::new(\"mode\").long(\"--mode\")).option(Opt::new(\"count\").help(\"number of items\")).render()"
+source: tests/manual/flags_options.rs
+expression: "Manual::new(\"demo\").option(Opt::new(\"output\").short(\"-o\").long(\"--output\").default_value(\"stdout\").help(\"where to write\"),).option(Opt::new(\"input\").short(\"-i\")).option(Opt::new(\"mode\").long(\"--mode\")).option(Opt::new(\"count\").help(\"number of items\")).without_version().render()"
 ---
 .ie \n(.g .ds Aq \(aq
 .el .ds Aq '

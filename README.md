@@ -15,6 +15,8 @@ use man::prelude::*;
 fn main() {
     let page = Manual::new("basic")
         .about("A basic example")
+        .version("1.2.3")
+        .source("basic-tools")
         .author(Author::new("Alice Person").email("alice@person.com"))
         .author(Author::new("Bob Human").email("bob@human.com"))
         .flag(
@@ -49,6 +51,57 @@ fn main() {
 
     println!("{}", page);
 }
+```
+
+`Manual::render` returns a complete roff document. `Manual::path()` returns the
+conventional `<name>.1` filename, which is useful when writing pages during a
+build:
+
+```rust,no_run
+// build.rs
+use man::prelude::*;
+use std::{env, fs};
+
+fn main() {
+    let manual = Manual::new("basic")
+        .about("A basic example")
+        .source("basic-tools");
+    let filename = manual.path();
+    let page = manual.render();
+    let path = env::var_os("OUT_DIR").unwrap().to_owned();
+    let path = std::path::PathBuf::from(path).join(filename);
+    fs::write(path, page).unwrap();
+}
+```
+
+Install the generated `<name>.1` file into the platform's man-directory as
+part of your package or Makefile install step. The crate only generates roff;
+it does not install files or require a particular build system.
+
+## Metadata and flexible sections
+
+The `version`, `date`, and `source` methods populate the corresponding man
+header metadata. The package version is used by default; call
+`without_version()` when it should be omitted. Add application-specific exit
+codes with `status(ExitStatus::new("CODE", "description"))`, and use
+`Opt::separator(" ")` for option forms such as `--output FILE`.
+Call `without_exit_status()` to omit the section entirely.
+
+Authors can contain additional text with repeated `Author::text` calls.
+Positional arguments support `Arg::optional()` and `Arg::variadic()`. Use
+`Section` for commands, subcommands, SEE ALSO, FILES, or any other project
+specific section:
+
+```rust
+use man::prelude::*;
+
+Manual::new("git-like")
+    .custom(
+        Section::new("COMMANDS")
+            .paragraph("add      Add files to the index.")
+            .paragraph("status   Show the working tree status."),
+    )
+    .render();
 ```
 Preview by running:
 ```sh

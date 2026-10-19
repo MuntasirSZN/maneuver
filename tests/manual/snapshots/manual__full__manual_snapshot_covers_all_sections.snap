@@ -1,5 +1,5 @@
 ---
-source: tests/manual.rs
+source: tests/manual/full.rs
 expression: page
 ---
 .ie \n(.g .ds Aq \(aq

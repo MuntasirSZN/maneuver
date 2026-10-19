@@ -1,141 +1,41 @@
 use super::*;
 use roff::{bold, italic, roman, Inline, Roff};
 
-/// The main man page struct.
-#[derive(Debug, Clone)]
-pub struct ExitStatus {
-    code: String,
-    description: String,
-}
-
-impl ExitStatus {
-    /// Create an exit status entry.
-    pub fn new(code: &str, description: &str) -> Self {
-        Self {
-            code: code.into(),
-            description: description.into(),
-        }
+pub(super) fn render(manual: Manual) -> String {
+    let mut page = Roff::new();
+    let date = manual.date.as_deref();
+    let version = manual.version.as_deref();
+    let source = manual.source.as_deref();
+    let mut header = vec![manual.name.to_uppercase(), "1".into()];
+    if date.is_some() || version.is_some() || source.is_some() {
+        header.push(date.unwrap_or("\"\"").into());
     }
-}
-
-/// The main man page struct.
-#[derive(Debug, Clone)]
-pub struct Manual {
-    name: String,
-    about: Option<String>,
-    description: Option<String>,
-    authors: Vec<Author>,
-    flags: Vec<Flag>,
-    options: Vec<Opt>,
-    environment: Vec<Env>,
-    arguments: Vec<Arg>,
-    custom_sections: Vec<Section>,
-    examples: Vec<Example>,
-    statuses: Vec<ExitStatus>,
-}
-
-impl Manual {
-    /// Create a new instance.
-    pub fn new(name: &str) -> Self {
-        Self {
-            name: name.into(),
-            about: None,
-            description: None,
-            authors: vec![],
-            flags: vec![],
-            options: vec![],
-            arguments: vec![],
-            environment: vec![],
-            custom_sections: vec![],
-            examples: vec![],
-            statuses: vec![],
-        }
+    if version.is_some() || source.is_some() {
+        header.push(version.unwrap_or("\"\"").into());
     }
-
-    /// Add a short description.
-    pub fn about<S: Into<String>>(mut self, about: S) -> Self {
-        self.about = Some(about.into());
-        self
+    if let Some(source) = source {
+        header.push(source.into());
     }
-
-    /// Add a long description.
-    pub fn description<S: Into<String>>(mut self, description: S) -> Self {
-        self.description = Some(description.into());
-        self
+    page.control("TH", header.iter().map(String::as_str));
+    page = about(page, &manual.name, &manual.about);
+    page = synopsis(
+        page,
+        &manual.name,
+        &manual.flags,
+        &manual.options,
+        &manual.arguments,
+    );
+    page = description(page, &manual.description);
+    page = flags(page, &manual.flags);
+    page = options(page, &manual.options);
+    page = env(page, &manual.environment);
+    for section in manual.custom_sections {
+        page = custom(page, section);
     }
-
-    /// Add an author.
-    pub fn author(mut self, author: Author) -> Self {
-        self.authors.push(author);
-        self
-    }
-
-    /// Add an environment variable.
-    pub fn env(mut self, env: Env) -> Self {
-        self.environment.push(env);
-        self
-    }
-
-    /// Add an flag.
-    pub fn flag(mut self, flag: Flag) -> Self {
-        self.flags.push(flag);
-        self
-    }
-
-    /// Add an option.
-    pub fn option(mut self, opt: Opt) -> Self {
-        self.options.push(opt);
-        self
-    }
-
-    /// Add a custom section
-    pub fn custom(mut self, custom_section: Section) -> Self {
-        self.custom_sections.push(custom_section);
-        self
-    }
-
-    /// Add an examples section
-    pub fn example(mut self, example: Example) -> Self {
-        self.examples.push(example);
-        self
-    }
-
-    /// Add an exit status entry.
-    pub fn status(mut self, status: ExitStatus) -> Self {
-        self.statuses.push(status);
-        self
-    }
-
-    /// Add a positional argument. Items are displayed in insertion order.
-    pub fn arg(mut self, arg: Arg) -> Self {
-        self.arguments.push(arg);
-        self
-    }
-
-    /// Render to a string.
-    pub fn render(self) -> String {
-        let mut page = Roff::new();
-        page.control("TH", [self.name.to_uppercase().as_str(), "1"]);
-        page = about(page, &self.name, &self.about);
-        page = synopsis(
-            page,
-            &self.name,
-            &self.flags,
-            &self.options,
-            &self.arguments,
-        );
-        page = description(page, &self.description);
-        page = flags(page, &self.flags);
-        page = options(page, &self.options);
-        page = env(page, &self.environment);
-        for section in self.custom_sections.into_iter() {
-            page = custom(page, section);
-        }
-        page = exit_status(page, &self.statuses);
-        page = examples(page, &self.examples);
-        page = authors(page, &self.authors);
-        page.render()
-    }
+    page = exit_status(page, manual.statuses.as_deref());
+    page = examples(page, &manual.examples);
+    page = authors(page, &manual.authors);
+    page.render()
 }
 
 /// Create a `NAME` section.
@@ -273,7 +173,7 @@ fn options(page: Roff, options: &[Opt]) -> Roff {
             }
             args.push(bold(long));
         }
-        args.push(roman("="));
+        args.push(roman(&opt.separator));
         args.push(italic(&opt.name));
         if let Some(ref default) = opt.default {
             args.push(roman(" "));
@@ -327,10 +227,6 @@ fn definition_section<'a>(
 
 /// Create a `EXIT STATUS` section.
 ///
-/// ## Implementation Note
-/// This currently only returns the status code `0`, and takes no arguments. We
-/// should let it take arguments.
-///
 /// ## Formatting
 /// ```txt
 /// EXIT STATUS
@@ -340,17 +236,20 @@ fn definition_section<'a>(
 ///
 ///        2      Optional error
 /// ```
-fn exit_status(page: Roff, statuses: &[ExitStatus]) -> Roff {
+fn exit_status(page: Roff, statuses: Option<&[ExitStatus]>) -> Roff {
+    if matches!(statuses, Some(statuses) if statuses.is_empty()) {
+        return page;
+    }
     let defaults;
-    let statuses = if statuses.is_empty() {
+    let statuses = if let Some(statuses) = statuses {
+        statuses
+    } else {
         defaults = vec![
             ExitStatus::new("0", "Successful program execution."),
             ExitStatus::new("1", "Unsuccessful program execution."),
             ExitStatus::new("101", "The program panicked."),
         ];
         &defaults
-    } else {
-        statuses
     };
     let mut page = section(page, "EXIT STATUS", vec![]);
     for status in statuses {

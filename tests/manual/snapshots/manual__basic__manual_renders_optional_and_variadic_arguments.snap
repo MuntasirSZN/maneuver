@@ -1,6 +1,6 @@
 ---
-source: tests/manual.rs
-expression: "Manual::new(\"demo\").author(Author::new(\"Alice\").email(\"alice@example.com\")).render()"
+source: tests/manual/basic.rs
+expression: "Manual::new(\"demo\").arg(Arg::new(\"config\").optional()).arg(Arg::new(\"files\").variadic()).without_version().render()"
 ---
 .ie \n(.g .ds Aq \(aq
 .el .ds Aq '
@@ -8,7 +8,7 @@ expression: "Manual::new(\"demo\").author(Author::new(\"Alice\").email(\"alice@e
 .SH NAME
 demo
 .SH SYNOPSIS
-\fBdemo\fR
+\fBdemo\fR config? files...
 .SH "EXIT STATUS"
 .TP
 \fB0\fR
@@ -19,8 +19,3 @@ Unsuccessful program execution.
 .TP
 \fB101\fR
 The program panicked.
-.SH AUTHOR
-.P
-.RS 2
-.nf
-Alice <alice@example.com>

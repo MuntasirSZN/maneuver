@@ -1,0 +1,27 @@
+---
+source: tests/manual/authors.rs
+expression: "Manual::new(\"demo\").author(Author::new(\"Alice\")).author(Author::new(\"Bob\").email(\"bob@example.com\")).without_version().render()"
+---
+.ie \n(.g .ds Aq \(aq
+.el .ds Aq '
+.TH DEMO 1
+.SH NAME
+demo
+.SH SYNOPSIS
+\fBdemo\fR
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+Successful program execution.
+.TP
+\fB1\fR
+Unsuccessful program execution.
+.TP
+\fB101\fR
+The program panicked.
+.SH AUTHORS
+.P
+.RS 2
+.nf
+Alice
+Bob <bob@example.com>

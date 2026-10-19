@@ -1,6 +1,6 @@
 ---
-source: tests/manual.rs
-expression: "Manual::new(\"demo\").custom(Section::new(\"usage note\").paragraph(\"first paragraph\").paragraph(\"second paragraph\"),).render()"
+source: tests/manual/authors.rs
+expression: "Manual::new(\"demo\").author(Author::new(\"Alice\").email(\"alice@example.com\")).without_version().render()"
 ---
 .ie \n(.g .ds Aq \(aq
 .el .ds Aq '
@@ -9,11 +9,6 @@ expression: "Manual::new(\"demo\").custom(Section::new(\"usage note\").paragraph
 demo
 .SH SYNOPSIS
 \fBdemo\fR
-.SH "usage note"
-first paragraph
-
-
-second paragraph
 .SH "EXIT STATUS"
 .TP
 \fB0\fR
@@ -24,3 +19,8 @@ Unsuccessful program execution.
 .TP
 \fB101\fR
 The program panicked.
+.SH AUTHOR
+.P
+.RS 2
+.nf
+Alice <alice@example.com>

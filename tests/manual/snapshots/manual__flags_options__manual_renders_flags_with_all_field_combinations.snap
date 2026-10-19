@@ -1,6 +1,6 @@
 ---
-source: tests/manual.rs
-expression: "Manual::new(\"demo\").flag(Flag::new().short(\"-s\").long(\"--short\").help(\"both names\")).flag(Flag::new().short(\"-s\")).flag(Flag::new().long(\"--long\")).flag(Flag::new().help(\"no names\")).render()"
+source: tests/manual/flags_options.rs
+expression: "Manual::new(\"demo\").flag(Flag::new().short(\"-s\").long(\"--short\").help(\"both names\")).flag(Flag::new().short(\"-s\")).flag(Flag::new().long(\"--long\")).flag(Flag::new().help(\"no names\")).without_version().render()"
 ---
 .ie \n(.g .ds Aq \(aq
 .el .ds Aq '

@@ -1,6 +1,6 @@
 ---
-source: tests/manual.rs
-expression: "Manual::new(\"demo\").author(Author::new(\"Project Team\").email(\"team@example.com\").text(\"Maintained by the platform group.\").text(\"Contact us for contribution questions.\")).render()"
+source: tests/manual/authors.rs
+expression: "Manual::new(\"demo\").author(Author::new(\"Project Team\").email(\"team@example.com\").text(\"Maintained by the platform group.\").text(\"Contact us for contribution questions.\")).without_version().render()"
 ---
 .ie \n(.g .ds Aq \(aq
 .el .ds Aq '

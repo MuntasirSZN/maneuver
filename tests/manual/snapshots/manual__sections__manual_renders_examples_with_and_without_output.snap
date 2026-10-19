@@ -1,6 +1,6 @@
 ---
-source: tests/manual.rs
-expression: "Manual::new(\"demo\").example(Example::new().text(\"run in debug mode\").command(\"demo --debug\").output(\"debugging enabled\"),).example(Example::new().prompt(\"#\").command(\"demo\").text(\"run as root\"),).example(Example::new().text(\"no command\")).render()"
+source: tests/manual/sections.rs
+expression: "Manual::new(\"demo\").example(Example::new().text(\"run in debug mode\").command(\"demo --debug\").output(\"debugging enabled\"),).example(Example::new().prompt(\"#\").command(\"demo\").text(\"run as root\"),).example(Example::new().text(\"no command\")).without_version().render()"
 ---
 .ie \n(.g .ds Aq \(aq
 .el .ds Aq '

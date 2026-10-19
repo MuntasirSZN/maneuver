@@ -1,0 +1,18 @@
+---
+source: tests/manual/metadata.rs
+expression: "Manual::new(\"demo\").status(ExitStatus::new(\"64\",\n\"Command line usage error.\")).status(ExitStatus::new(\"70\",\n\"Internal software error.\")).without_version().render()"
+---
+.ie \n(.g .ds Aq \(aq
+.el .ds Aq '
+.TH DEMO 1
+.SH NAME
+demo
+.SH SYNOPSIS
+\fBdemo\fR
+.SH "EXIT STATUS"
+.TP
+\fB64\fR
+Command line usage error.
+.TP
+\fB70\fR
+Internal software error.

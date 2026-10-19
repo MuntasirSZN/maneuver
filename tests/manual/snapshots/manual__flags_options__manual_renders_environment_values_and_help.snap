@@ -1,6 +1,6 @@
 ---
-source: tests/manual.rs
-expression: "Manual::new(\"demo\").env(Env::new(\"PORT\").default_value(\"8080\").help(\"listening port\"),).env(Env::new(\"MODE\").help(\"execution mode\")).env(Env::new(\"EMPTY\")).render()"
+source: tests/manual/flags_options.rs
+expression: "Manual::new(\"demo\").env(Env::new(\"PORT\").default_value(\"8080\").help(\"listening port\"),).env(Env::new(\"MODE\").help(\"execution mode\")).env(Env::new(\"EMPTY\")).without_version().render()"
 ---
 .ie \n(.g .ds Aq \(aq
 .el .ds Aq '

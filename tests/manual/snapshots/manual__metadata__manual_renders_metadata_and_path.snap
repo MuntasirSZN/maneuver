@@ -1,14 +1,14 @@
 ---
-source: tests/manual.rs
-expression: "Manual::new(\"demo\").arg(Arg::new(\"config\").optional()).arg(Arg::new(\"files\").variadic()).render()"
+source: tests/manual/metadata.rs
+expression: manual.render()
 ---
 .ie \n(.g .ds Aq \(aq
 .el .ds Aq '
-.TH DEMO 1
+.TH DEMO 1 2026-10-19 2.4.0 demo-tools
 .SH NAME
 demo
 .SH SYNOPSIS
-\fBdemo\fR config? files...
+\fBdemo\fR
 .SH "EXIT STATUS"
 .TP
 \fB0\fR
@@ -19,3 +19,8 @@ Unsuccessful program execution.
 .TP
 \fB101\fR
 The program panicked.
+.SH AUTHOR
+.P
+.RS 2
+.nf
+Team Additional author information.

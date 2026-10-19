@@ -1,0 +1,11 @@
+---
+source: tests/manual/metadata.rs
+expression: "Manual::new(\"demo\").without_exit_status().without_version().render()"
+---
+.ie \n(.g .ds Aq \(aq
+.el .ds Aq '
+.TH DEMO 1
+.SH NAME
+demo
+.SH SYNOPSIS
+\fBdemo\fR
