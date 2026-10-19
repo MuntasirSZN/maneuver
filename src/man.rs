@@ -140,7 +140,7 @@ fn about(page: Roff, name: &str, desc: &Option<String>) -> Roff {
 /// ```
 fn description(page: Roff, desc: &Option<String>) -> Roff {
     if let Some(desc) = desc {
-        page.section("DESCRIPTION", &[desc.to_owned()])
+        page.section("DESCRIPTION", std::slice::from_ref(desc))
     } else {
         page
     }
@@ -218,13 +218,13 @@ fn flags(page: Roff, flags: &[Flag]) -> Roff {
     for (index, flag) in flags.iter().enumerate() {
         let mut args: Vec<String> = vec![];
         if let Some(ref short) = flag.short {
-            args.push(bold(&short));
+            args.push(bold(short));
         }
         if let Some(ref long) = flag.long {
             if !args.is_empty() {
                 args.push(", ".to_string());
             }
-            args.push(bold(&long));
+            args.push(bold(long));
         }
         let desc = match flag.help {
             Some(ref desc) => desc.to_string(),
@@ -255,13 +255,13 @@ fn options(page: Roff, options: &[Opt]) -> Roff {
     for (index, opt) in options.iter().enumerate() {
         let mut args: Vec<String> = vec![];
         if let Some(ref short) = opt.short {
-            args.push(bold(&short));
+            args.push(bold(short));
         }
         if let Some(ref long) = opt.long {
             if !args.is_empty() {
                 args.push(", ".to_string());
             }
-            args.push(bold(&long));
+            args.push(bold(long));
         }
         args.push("=".into());
         args.push(italic(&opt.name));
@@ -272,7 +272,7 @@ fn options(page: Roff, options: &[Opt]) -> Roff {
             args.push("[".into());
             args.push("default:".into());
             args.push(" ".into());
-            args.push(italic(&default));
+            args.push(italic(default));
             args.push("]".into());
         }
         let desc = match opt.help {
@@ -312,7 +312,7 @@ fn env(page: Roff, environment: &[Env]) -> Roff {
             args.push("[".into());
             args.push("default:".into());
             args.push(" ".into());
-            args.push(italic(&default));
+            args.push(italic(default));
             args.push("]".into());
         }
         let desc = match env.help {
@@ -402,7 +402,7 @@ fn examples(page: Roff, examples: &[Example]) -> Roff {
         let text = example.text.unwrap_or("");
         let mut full_command = String::from(example.prompt);
         if let Some(command) = example.command {
-            full_command.push_str(" ");
+            full_command.push(' ');
             full_command.push_str(command);
         };
         let output = match example.output {
@@ -411,7 +411,7 @@ fn examples(page: Roff, examples: &[Example]) -> Roff {
                 // see https://github.com/killercup/roff-rs/issues/5
                 let mut full_output = String::from("\n.br\n");
                 full_output.push_str(output);
-                full_output.push_str("\n");
+                full_output.push('\n');
                 full_output
             }
             None => String::from("\n"),
