@@ -1,0 +1,33 @@
+---
+source: tests/manual.rs
+expression: "Manual::new(\"demo\").example(Example::new().text(\"run in debug mode\").command(\"demo --debug\").output(\"debugging enabled\"),).example(Example::new().prompt(\"#\").command(\"demo\").text(\"run as root\"),).example(Example::new().text(\"no command\")).render()"
+---
+.TH DEMO 1
+.SH NAME
+demo
+.SH SYNOPSIS
+\fBdemo\fR
+.SH EXIT STATUS
+.TP
+\fB0\fR
+Successful program execution.
+
+.TP
+\fB1\fR
+Unsuccessful program execution.
+
+.TP
+\fB101\fR
+The program panicked.
+.SH EXAMPLES
+.TP
+run in debug mode
+\fB$ demo \-\-debug\fR
+.br
+debugging enabled
+.TP
+run as root
+\fB# demo\fR
+.TP
+no command
+\fB$\fR

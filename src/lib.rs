@@ -14,11 +14,11 @@ mod section;
 
 pub mod prelude;
 
-pub use arg::Arg;
-pub use author::Author;
-pub use environment::Env;
-pub use example::Example;
-pub use flag::Flag;
-pub use man::Manual;
-pub use option::Opt;
-pub use section::Section;
+pub use crate::arg::Arg;
+pub use crate::author::Author;
+pub use crate::environment::Env;
+pub use crate::example::Example;
+pub use crate::flag::Flag;
+pub use crate::man::Manual;
+pub use crate::option::Opt;
+pub use crate::section::Section;

@@ -1,0 +1,54 @@
+---
+source: tests/manual.rs
+expression: page
+---
+.TH AUTH-SERVICE 1
+.SH NAME
+auth\-service \- authorize & authenticate members
+.SH SYNOPSIS
+\fBauth\-service\fR [FLAGS] [OPTIONS] path
+.SH DESCRIPTION
+A command\-line service for managing authenticated members.
+.SH FLAGS
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Enable verbose logging.
+.SH OPTIONS
+.TP
+\fB\-o\fR, \fB\-\-output\fR=\fIoutput\fR [default: \fIstdout\fR]
+The output destination.
+.SH ENVIRONMENT
+.TP
+\fBPORT\fR [default: \fI3000\fR]
+The network port to listen to.
+.SH USAGE NOTE
+The service should be started before requests arrive.
+
+Use the environment variable to select its port.
+
+
+.SH EXIT STATUS
+.TP
+\fB0\fR
+Successful program execution.
+
+.TP
+\fB1\fR
+Unsuccessful program execution.
+
+.TP
+\fB101\fR
+The program panicked.
+.SH EXAMPLES
+.TP
+run the service
+\fB$ auth\-service \-\-verbose\fR
+.br
+now listening
+
+.SH AUTHORS
+.P
+.RS 2
+.nf
+Alice Person <alice@example.com>
+Bob Human

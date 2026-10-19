@@ -1,0 +1,37 @@
+---
+source: tests/manual.rs
+expression: "Manual::new(\"demo\").flag(Flag::new().short(\"-s\").long(\"--short\").help(\"both names\")).flag(Flag::new().short(\"-s\")).flag(Flag::new().long(\"--long\")).flag(Flag::new().help(\"no names\")).render()"
+---
+.TH DEMO 1
+.SH NAME
+demo
+.SH SYNOPSIS
+\fBdemo\fR [FLAGS]
+.SH FLAGS
+.TP
+\fB\-s\fR, \fB\-\-short\fR
+both names
+
+.TP
+\fB\-s\fR
+
+
+.TP
+\fB\-\-long\fR
+
+
+.TP
+
+no names
+.SH EXIT STATUS
+.TP
+\fB0\fR
+Successful program execution.
+
+.TP
+\fB1\fR
+Unsuccessful program execution.
+
+.TP
+\fB101\fR
+The program panicked.
