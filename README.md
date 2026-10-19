@@ -1,10 +1,10 @@
 # maneuver
-[![crates.io version][1]][2] [![downloads][3]][4] [![docs.rs docs][5]][6]
+[![crates.io version][1]][2] [![downloads][3]][2] [![docs.rs docs][4]][5]
 
 Generate structured man pages using
 [roff-rs](https://github.com/killercup/roff-rs).
 
-- [Documentation][6]
+- [Documentation][5]
 - [Crates.io][2]
 
 ---
@@ -167,6 +167,5 @@ Otherwise, install by adding to Cargo.toml file's dependency section.
 [1]: https://img.shields.io/crates/v/maneuver.svg?style=flat-square
 [2]: https://crates.io/crates/maneuver
 [3]: https://img.shields.io/crates/d/maneuver.svg?style=flat-square
-[4]: https://crates.io/crates/maneuver
-[5]: https://docs.rs/maneuver/badge.svg
-[6]: https://docs.rs/maneuver
+[4]: https://docs.rs/maneuver/badge.svg
+[5]: https://docs.rs/maneuver
